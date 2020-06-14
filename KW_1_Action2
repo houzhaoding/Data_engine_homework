@@ -1,0 +1,32 @@
+"""
+时间：2020.06.14
+作者：寒风笼月
+功能：对班级成绩统计
+版本：1.0
+"""
+# coding: utf-8
+from pandas import Series,DataFrame
+
+#建立成绩数据结构
+data={
+    '语文':[98,95,98,90,80],
+    '数学':[65,76,86,88,90],
+    '英语':[30,98,88,77,90]
+}
+data=DataFrame(data,index=['张飞','关羽','刘备','典韦','许诸'] )
+
+#在语文、英语、数学中的平均成绩
+print("平均成绩:",data.mean())
+
+#在语文、英语、数学中的最小成绩
+print("最小成绩:",data.min())
+
+#在语文、英语、数学中成绩方差
+print("成绩方差:",data.var())
+
+#在语文、英语、数学中标准差
+print("成绩标准差:",data.std())
+
+#总成绩及排序
+data_sum=data.sum(axis=1)
+print(data_sum.sort_values(ascending=False))
