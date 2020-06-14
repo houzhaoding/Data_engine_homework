@@ -1,0 +1,31 @@
+"""
+时间：2020.06.14
+作者：寒风笼月
+功能：对汽车质量进行分析
+版本：1.0
+"""
+
+import pandas as pd
+#数据读取
+result = pd.read_csv('F:/DataEngine/Week_1/Data_Engine_with_Python-master/L1/car_data_analyze/car_complain.csv')
+
+#数据拆分
+result = result.drop(columns='problem').join(result['problem'].str.get_dummies(','))
+tags = result.columns[7:]
+
+#品牌投诉总数
+print("     品牌投诉总数     ")
+df=result.groupby(['brand'])['id'].agg(['count']).sort_values('count',ascending=False)
+#print(df)
+
+#车型投诉总数
+print("     车型投诉总数     ")
+df1=result.groupby(['car_model'])['id'].agg(['count']).sort_values('count',ascending=False)
+#print(df1)
+
+#各品牌平均车型投诉数量
+print("     各品牌平均车型投诉数量     ")
+df2=result.groupby(['brand','car_model'])['id'].agg(['count']).groupby(['brand']).agg('mean')
+df2=df2.sort_values('count',ascending=False)
+print(df2)
+
