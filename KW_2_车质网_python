@@ -1,0 +1,54 @@
+"""
+时间：2020.06.22
+作者：寒风笼月
+功能：利用python爬取车质网投诉
+版本：1.0
+"""
+import requests
+from bs4 import BeautifulSoup
+from pandas import DataFrame
+
+
+# coding:utf-8
+# 解析得到soup对象
+def soup_get(url):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                             'Chrome/83.0.4103.106 Safari/537.36'
+               }
+    html = requests.get(url=url, headers=headers, timeout=10).text
+    soup = BeautifulSoup(html, 'html.parser', from_encoding='utf-8')
+    return soup
+
+
+# 提取soup对象中的有用元素
+def soup_analyze(soup):
+    df = DataFrame(columns=['id', 'brand', 'car_model', 'type', 'desc', 'problem', 'datetime', 'status'])
+    temp = soup.find('div', attrs={'class': 'tslb_b'})
+    tr_list = temp.find_all('tr')
+    for tr in tr_list:
+        temp_1 = {}
+        td_list = tr.find_all('td')
+        if len(td_list) > 0:
+            temp_1['id'], temp_1['brand'], temp_1['car_model'], temp_1['type'], temp_1['desc'], temp_1['problem'], \
+            temp_1['datetime'], temp_1['status'] = td_list[0].text, td_list[1].text, td_list[2].text, \
+                                                   td_list[3].text, td_list[4].text, td_list[5].text, td_list[6].text, \
+                                                   td_list[7].text
+            df = df.append(temp_1, ignore_index=True)
+    return df
+
+
+def main():
+    base_url = 'http://www.12365auto.com/zlts/0-0-0-0-0-0_0-0-0-0-0-0-0-'
+    page = 1
+    dir = 'E:/Python/Dataengine/KW_2/results.csv'
+    for i in range(0, page):
+        url = base_url + str(i + 1) + '.shtml'
+        soup = soup_get(url)
+        df = soup_analyze(soup)
+
+    df.to_csv(dir)
+    print(df)
+
+
+if __name__ == "__main__":
+    main()
